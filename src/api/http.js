@@ -34,9 +34,10 @@ function popTarget() {
 }
 
 Axios.defaults.timeout = 10000
+Axios.defaults.withCredentials=true;
 // 通用请求拦截器
 Axios.interceptors.request.use(config => {
-  pushTarget()
+  // pushTarget()
   return config
 },
   err => {
@@ -46,14 +47,14 @@ Axios.interceptors.request.use(config => {
 )
 // 通用响应拦截器
 Axios.interceptors.response.use(response => {
-  popTarget()
+  // popTarget()
   if (response.status !== 200) {
     return Promise.reject(response.data)
   }
   return response.data
 },
   err => {
-    popTarget()
+    // popTarget()
     console.error(err)
     if (err && err.response && err.response.status) {
       switch (err.response.status) {

@@ -11,8 +11,6 @@ export const mainStore = defineStore('main',{
   },
   actions: {
     changeC(val){
-      console.log('123');
-      console.log(val);
       this.count++
     }
   },

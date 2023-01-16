@@ -1,10 +1,10 @@
 <template>
   <div class="menu-wrap">
     <!-- 个人信息 -->
-    <div class="person_data">
+    <div class="person_data" @click="lookPerson">
       <el-avatar :size="45" class="cu" />
       <div class="user">
-        <span class="user_name">匿名游客儿</span>
+        <span class="user_name">{{ cookies == undefined ? '未登录' : '' }}</span>
         <i class="iconfont" style="color:#666">&#xe600;</i>
       </div>
     </div>
@@ -29,16 +29,23 @@
       </ul>
     </div>
   </div>
+  <LoginDialog v-model="visible"></LoginDialog>
 </template>
 <script setup>
-import { getCurrentInstance, ref, reactive } from 'vue'
+import LoginDialog from '../common/loginDialog.vue'
+import { ref, reactive } from 'vue'
 import $api from '../../api/api.js'
+import cookie from 'js-cookie'
 
-const { appContext } = getCurrentInstance()
-const $cookie = appContext.app.config.globalProperties.$cookie
+
+
+const cookies = ref(cookie.get('ssoToken'))
+const visible = ref(false)
 const active = ref(0)
 const lastActive = ref(-1)
 const hideSong = ref(true)
+// const dialog = ref(null)
+
 const musicList = reactive([
   {
     hideTarget: true,
@@ -107,8 +114,8 @@ const tabChange = (index) => {
   active.value = index
 
 }
-const addSong = ()=>{
-  
+const addSong = () => {
+
 }
 const hidePlayList = () => {
   hideSong.value = !hideSong.value
@@ -124,20 +131,28 @@ const hidePlayList = () => {
     }
   })
 }
-$api.playList({
-  uid: '316464708'
-}).then((res) => {
-  res.playlist.forEach((item,index) => {
-    if (item.name.indexOf('喜欢的音乐') == -1) {
-      if (index == 1) {
-        item.target = 'target'
+const lookPerson = () =>{
+  // console.log(dialog.value.visible);
+  if (cookies.value === undefined) {
+    visible.value = !visible.value
+  }
+}
+if (cookies.value != undefined) {
+  $api.playList({
+    uid: '316464708'
+  }).then((res) => {
+    res.playlist.forEach((item, index) => {
+      if (item.name.indexOf('喜欢的音乐') == -1) {
+        if (index == 1) {
+          item.target = 'target'
+        }
+        item.icon = 'icon-gedan'
+        item.hideTarget = true
+        musicList.push(item)
       }
-      item.icon = 'icon-gedan'
-      item.hideTarget = true
-      musicList.push(item)
-    }
+    })
   })
-})
+}
 </script>
 <style lang="less" scoped>
 .menu-wrap {
@@ -187,7 +202,8 @@ $api.playList({
           display: inline-block;
           transform: rotate(90deg);
         }
-        .icon-jia{
+
+        .icon-jia {
           font-size: 21px;
           font-weight: bold;
           margin-left: 105px;
@@ -213,7 +229,8 @@ $api.playList({
           font-size: 24px;
           margin-right: 7px;
         }
-        .icon-xd{
+
+        .icon-xd {
           position: absolute;
           right: 30px;
         }
