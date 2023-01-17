@@ -32,62 +32,86 @@ function popTarget() {
     hideLoading()
   }
 }
-
+// 全局默认配置
+Axios.defaults.baseURL = '/api'
+// 超时时间
 Axios.defaults.timeout = 10000
-Axios.defaults.withCredentials=true;
+// 允许携带cookie
+Axios.defaults.withCredentials = true;
+Axios.defaults.headers.post['Content-Type'] = 'application/json';
+
 // 通用请求拦截器
 Axios.interceptors.request.use(config => {
   // pushTarget()
   return config
 },
   err => {
-    console.error(err)
+    // console.error(err)
     return Promise.reject(err)
   }
 )
 // 通用响应拦截器
 Axios.interceptors.response.use(response => {
   // popTarget()
-  if (response.status !== 200) {
-    return Promise.reject(response.data)
-  }
+  // if (response.status !== 200) {
+  //   return Promise.reject(response.data)
+  // }
   return response.data
 },
   err => {
     // popTarget()
-    console.error(err)
-    if (err && err.response && err.response.status) {
-      switch (err.response.status) {
-        case 404:
-          ElMessage({ message: '请求不存在', type: 'error' })
-          break;
-        case 500:
-          ElMessage({ message: '服务器繁忙', type: 'error' })
-          break;
-        case 502:
-          ElMessage({ message: '服务器繁忙', type: 'error' })
-          break;
-        default:
-          break;
-      }
-    }
+    // console.error(err)
+    // if (err && err.response && err.response.status) {
+    //   switch (err.response.status) {
+    //     case 404:
+    //       ElMessage({ message: '请求不存在', type: 'error' })
+    //       break;
+    //     case 500:
+    //       ElMessage({ message: '服务器繁忙', type: 'error' })
+    //       break;
+    //     case 502:
+    //       ElMessage({ message: '服务器繁忙', type: 'error' })
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // }
     return Promise.reject(err)
   }
 )
+/**
+ * 返回axios promise对象
+ * @param url
+ * @param method
+ * @returns {Promise<AxiosResponse<T>>}
+*/
 
 function api(url, method = 'post') {
   return function (params) {
     try {
       switch (method) {
         case 'post':
-          return Axios.post(url, params)
+          return Axios.post(url, params).then(
+            res => {
+              return res
+            }),
+            err => {
+              if (
+                err &&
+                err.response &&
+                err.response.data &&
+                err.response.data.Error
+              ) {
+                ElMessage({message:err.response.data.Error.Message,type:'error'});
+              }
+            }
         case 'get':
           return Axios.get(url, { params })
         default:
           throw new Error('请选择post或者get请求方法')
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }
 }

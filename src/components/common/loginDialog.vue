@@ -93,6 +93,11 @@ import cookie from "js-cookie";
 import $api from "../../api/api";
 import md5 from 'js-md5'
 
+defineProps({
+  visible:{
+    type:Boolean
+  }
+})
 
 const verify = ref("");
 const dropTarget = ref(false);
@@ -154,7 +159,7 @@ const sign = () => {
       if (res.exist == 1) {
         $api.phoneLogin(payload)
           .then((res) => {
-            console.log(res);
+            // console.log(res);
             cookie.set('ssoToken', res.cookie, { expires: 30 })
             cookie.set('userId', res.profile.userId, { expires: 30 })
             cookie.set('token', res.token, { expires: 30 })

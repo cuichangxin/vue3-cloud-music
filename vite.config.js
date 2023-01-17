@@ -2,6 +2,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import cookie from 'js-cookie'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,6 +22,9 @@ export default defineConfig({
         target:'http://localhost:3000',
         changeOrigin:true,
         rewrite: (path) => path.replace(/^\/api/, ''),
+        // headers:{
+        //   Cookie:cookie.get('ssoToken')
+        // }
       }
     }
   }
