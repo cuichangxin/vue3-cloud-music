@@ -48,21 +48,21 @@ const tabsList = reactive({
 <style lang="less" scoped>
 .header-left-content {
   height: 70px;
-  width: 280px;
+  width: 260px;
   background-color: #f5f5f5;
   border-radius: 20px 0 0 0;
 
   .history-content {
     width: 90px;
     float: right;
-    margin-top: 20px;
+    margin-top: 22px;
     margin-right: 30px;
 
     .icon-style {
       width: 30px;
       height: 30px;
       font-weight: 700;
-      font-size: 20px;
+      font-size: 18px;
       cursor: pointer;
       border-radius: 50px;
       text-align: center;
@@ -77,7 +77,7 @@ const tabsList = reactive({
 .header-right-content {
   background-color: #fafafa;
   height: 70px;
-  width: calc(100% - 280px);
+  width: calc(100% - 260px);
   border-radius: 0 20px 0 0;
 
   .menu-right-content {
@@ -101,7 +101,7 @@ const tabsList = reactive({
     :deep(.el-tabs__item) {
       color: #808080;
       font-weight: normal;
-      font-size: 19px;
+      font-size: 16px;
 
       &:hover {
         color: #000;
@@ -131,7 +131,7 @@ const tabsList = reactive({
     }
 
     :deep(.el-input__icon) {
-      font-size: 18px;
+      font-size: 16px;
       color: #666;
     }
 
@@ -145,7 +145,7 @@ const tabsList = reactive({
       width: 35px;
       height: 35px;
       border-radius: 35px;
-      font-size: 25px;
+      font-size: 20px;
       line-height: 35px;
       text-align: center;
       cursor: pointer;

@@ -11,7 +11,6 @@ import './config/rem'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import cookie from './config/cookie'
 import './assets/css/public.less'
-// import LoginDialog from './components/common/loginDialog.vue'
 
 const app = createApp(App)
 
@@ -25,6 +24,5 @@ app.use(ElementPlus)
 // app.config.globalProperties.$md5 = md5
 // app.config.globalProperties.$api = api   // vue3 全局引入调用接口变麻烦，故不使用该形式
 // app.config.globalProperties.$cookie = cookie
-// app.component('LoginDialog',LoginDialog)
 
 app.mount('#app')

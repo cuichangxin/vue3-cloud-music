@@ -13,5 +13,7 @@ export default {
   // 检测手机号是否注册
   checkPhone:api('/cellphone/existence/check','post'),
   // 获取用户详情
-  userDetail:api('/user/detail','post')
+  userDetail:api('/user/detail','post'),
+  // 获取首页信息
+  homePage:api('/homepage/block/page','post')
 }

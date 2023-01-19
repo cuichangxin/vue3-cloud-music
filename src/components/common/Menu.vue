@@ -4,31 +4,11 @@
     <div class="person_data" @click="lookPerson">
       <el-avatar :size="45" class="cu" />
       <div class="user">
-        <span class="user_name">{{ cookies == undefined ? '未登录' : '' }}</span>
+        <span class="user_name">{{ !cookies ? '未登录' : '' }}</span>
         <i class="iconfont" style="color:#666">&#xe600;</i>
       </div>
     </div>
     <div class="find-music">
-      <!-- <ul>
-        <li v-for="(item, index) in topTagList">
-          <i :class="['iconfont', item.icon]"></i>
-          <span class="text-1">{{ item.name }}</span>
-        </li>
-        <h5>我的音乐</h5>
-        <div v-for="(item, index) in musicList">
-          <li v-if="!item.isLogin">
-          <i :class="['iconfont', item.icon]"></i>
-          <span class="text-1">{{ item.name }}</span>
-          <i class="iconfont icon-xd" v-if="item.name == '我喜欢的音乐'">&#xe61a;</i>
-        </li>
-        </div>
-        <h5 @click="hidePlayList">
-          <i class="iconfont icon-ro"
-            :style="hideSong ? 'transform: rotate(90deg);' : 'transform: rotate(0deg);'">&#xe600;</i>
-          创建的歌单
-          <i class="iconfont icon-jia" @click.stop="addSong">&#xeb78;</i>
-        </h5>
-      </ul> -->
       <ul v-for="(item, key) in menuList">
         <h5 v-if="item.name" @click="hidePlayList(item.fn)">
           <i class="iconfont icon-ro" v-if="item.name == '创建的歌单'"
@@ -46,20 +26,21 @@
       </ul>
     </div>
   </div>
-  <LoginDialog v-model="visible"></LoginDialog>
+  <LoginDialog v-if="visible" v-model="visible"></LoginDialog>
 </template>
 <script setup>
 import LoginDialog from '../common/loginDialog.vue'
-import { ref, reactive } from 'vue'
+import { ref, reactive,createApp } from 'vue'
 import $api from '../../api/api.js'
 import cookie from 'js-cookie'
 
 
-
-const cookies = ref(cookie.get('ssoToken'))
+const app = createApp({})
+app.component({
+  LoginDialog
+})
+const cookies = ref(cookie.get('ssoToken') !== undefined ? true : false)
 const visible = ref(false)
-const activeIndex = ref(0)
-const lastActive = ref(-1)
 const hideSong = ref(true)
 
 const menuList = reactive([
@@ -68,7 +49,8 @@ const menuList = reactive([
     children: [
       {
         name: '发现音乐',
-        icon: 'icon-yinle1'
+        icon: 'icon-yinle1',
+        isActive:true
       },
       {
         name: '播客',
@@ -125,9 +107,6 @@ const menuList = reactive([
   }
 ])
 
-// 创建的歌单
-const createPlayList = reactive([])
-
 const tabChange = (item, index, key) => {
   menuList.forEach((dd,k) => {
     if (k == key) {
@@ -153,11 +132,11 @@ const hidePlayList = (e) => {
   if (e == 'hidePlayList') hideSong.value = !hideSong.value
 }
 const lookPerson = () => {
-  if (cookies.value === undefined) {
+  if (cookies.value) {
     visible.value = !visible.value
   }
 }
-if (cookies.value != undefined) {
+if (cookies.value) {
   $api.playList({
     uid: cookie.get('userId')
   }).then((res) => {
@@ -176,9 +155,9 @@ if (cookies.value != undefined) {
 </script>
 <style lang="less" scoped>
 .menu-wrap {
-  width: 280px;
+  width: 260px;
   background: #eee;
-  height: calc(100% - 70px);
+  height: calc(700px - 70px);
   border-radius: 0 0 0 20px;
   overflow: hidden;
 
@@ -197,7 +176,7 @@ if (cookies.value != undefined) {
       cursor: default;
 
       .user_name {
-        font-size: 19px;
+        font-size: 16px;
         margin-right: 4px;
         color: #333;
       }
@@ -217,7 +196,7 @@ if (cookies.value != undefined) {
         font-weight: normal;
         margin: 15px 0 15px 0;
         cursor: pointer;
-        font-size: 15px;
+        font-size: 14px;
         display: flex;
         justify-content: flex-start;
         align-items: center;
@@ -229,7 +208,7 @@ if (cookies.value != undefined) {
         }
 
         .icon-jia {
-          font-size: 21px;
+          font-size: 18px;
           font-weight: bold;
           flex: 1;
           margin-left: 88px;
@@ -237,8 +216,8 @@ if (cookies.value != undefined) {
       }
 
       li {
-        height: 50px;
-        font-size: 18px;
+        height: 45px;
+        font-size: 15px;
         display: flex;
         align-items: center;
         padding-left: 30px;
@@ -252,7 +231,7 @@ if (cookies.value != undefined) {
         }
 
         i {
-          font-size: 24px;
+          font-size: 20px;
           margin-right: 7px;
         }
 

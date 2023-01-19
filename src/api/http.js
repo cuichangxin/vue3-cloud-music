@@ -91,20 +91,7 @@ function api(url, method = 'post') {
     try {
       switch (method) {
         case 'post':
-          return Axios.post(url, params).then(
-            res => {
-              return res
-            }),
-            err => {
-              if (
-                err &&
-                err.response &&
-                err.response.data &&
-                err.response.data.Error
-              ) {
-                ElMessage({message:err.response.data.Error.Message,type:'error'});
-              }
-            }
+          return Axios.post(url, params)
         case 'get':
           return Axios.get(url, { params })
         default:
