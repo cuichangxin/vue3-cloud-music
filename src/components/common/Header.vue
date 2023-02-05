@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-start">
+  <div class="flex-start header_box">
     <!-- 左侧 -->
     <div class="header-left-content">
       <div class="history-content flex-between">
@@ -44,18 +44,23 @@ const tabsList = reactive({
   singer: '歌手',
   LatestMusic: '最新音乐'
 })
+
+const handleClick = () => {}
 </script>
 <style lang="less" scoped>
+.header_box{
+  position: relative;
+}
 .header-left-content {
-  height: 70px;
-  width: 260px;
+  height: 60px;
+  width: 250px;
   background-color: #f5f5f5;
   border-radius: 20px 0 0 0;
 
   .history-content {
     width: 90px;
     float: right;
-    margin-top: 22px;
+    margin-top: 16px;
     margin-right: 30px;
 
     .icon-style {
@@ -75,10 +80,15 @@ const tabsList = reactive({
 }
 
 .header-right-content {
-  background-color: #fafafa;
-  height: 70px;
-  width: calc(100% - 260px);
+  background-color: rgba(229, 229, 229, 0.94);
+  height: 60px;
+  width: calc(100% - 250px);
   border-radius: 0 20px 0 0;
+  backdrop-filter: blur(10px);
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 99;
 
   .menu-right-content {
     display: flex;
@@ -137,7 +147,7 @@ const tabsList = reactive({
 
     .w-350 {
       width: 350px;
-      height: 70px;
+      height: 60px;
       margin-right: 40px;
     }
 

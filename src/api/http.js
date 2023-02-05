@@ -43,6 +43,17 @@ Axios.defaults.headers.post['Content-Type'] = 'application/json';
 // 通用请求拦截器
 Axios.interceptors.request.use(config => {
   // pushTarget()
+  if (config.method == 'post') {
+    config.data = {
+      ...config.data,
+      timestamp:Date.parse(new Date())
+    }
+  }else if (config.method == 'get') {
+    config.params = {
+      ...config.params,
+      timestamp:Date.parse(new Date())
+    }
+  }
   return config
 },
   err => {
@@ -61,21 +72,25 @@ Axios.interceptors.response.use(response => {
   err => {
     // popTarget()
     // console.error(err)
-    // if (err && err.response && err.response.status) {
-    //   switch (err.response.status) {
-    //     case 404:
-    //       ElMessage({ message: '请求不存在', type: 'error' })
-    //       break;
-    //     case 500:
-    //       ElMessage({ message: '服务器繁忙', type: 'error' })
-    //       break;
-    //     case 502:
-    //       ElMessage({ message: '服务器繁忙', type: 'error' })
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // }
+    if (err && err.response && err.response.status) {
+      if (err.response.data) {
+        ElMessage({ message: err.response.data.message, type: 'error' })
+      } else {
+        switch (err.response.status) {
+          case 404:
+            ElMessage({ message: '请求不存在', type: 'error' })
+            break;
+          case 500:
+            ElMessage({ message: '服务器繁忙', type: 'error' })
+            break;
+          case 502:
+            ElMessage({ message: '服务器繁忙', type: 'error' })
+            break;
+          default:
+            break;
+        }
+      }
+    }
     return Promise.reject(err)
   }
 )

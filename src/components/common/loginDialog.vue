@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :model-value="visible" width="22%" :show-close="false" align-center>
+  <el-dialog :model-value="visible" width="360" :show-close="false" align-center draggable>
     <template #header="{ close }">
       <div class="my_header">
         <el-icon :size="18" @click="close">
@@ -88,16 +88,18 @@
   </el-dialog>
 </template>
 <script setup>
-import { toRefs, ref, reactive } from "vue";
+import { ref, reactive, inject } from "vue";
 import cookie from "js-cookie";
 import $api from "../../api/api";
 import md5 from 'js-md5'
 
 defineProps({
-  visible:{
-    type:Boolean
+  visible: {
+    type: Boolean
   }
 })
+
+var reload = inject('reload')
 
 const verify = ref("");
 const dropTarget = ref(false);
@@ -105,6 +107,7 @@ const codeBtn = ref("获取验证码");
 const codeTimer = ref(60);
 const timer = ref(null);
 const loginModeText = ref('验证码登录')
+const isCode = ref(true)
 /**
  * 0 密码登录
  * 1 验证码登录
@@ -135,7 +138,7 @@ const sign = () => {
   let payload = {
     countrycode: Number(form.areaCode.slice(1)), // 国家区号
     phone: Number(form.phone), // 手机号
-    captcha: "", // 验证码
+    captcha: Number(form.captcha), // 验证码
     md5_password: md5(form.password) // 密码
   }
   if (loginMode.value == 0) {
@@ -149,7 +152,7 @@ const sign = () => {
     verify.value = "请输入11位手机号";
   } else if (form.phone == "") {
     verify.value = "请输入手机号";
-  } else if (form.password == "") {
+  } else if (form.password == "" && loginMode.value == 0) {
     verify.value = "请输入登录密码";
   } else if (form.captcha == '' && loginMode.value == 1) {
     verify.value = "请输入验证码";
@@ -163,6 +166,8 @@ const sign = () => {
             cookie.set('ssoToken', res.cookie, { expires: 30 })
             cookie.set('userId', res.profile.userId, { expires: 30 })
             cookie.set('token', res.token, { expires: 30 })
+            reload.reload()
+            close()
           });
       } else {
         verify.value = "请前往官方网站注册"
@@ -172,31 +177,34 @@ const sign = () => {
 };
 // 发送验证码
 const sentCode = () => {
-  if (timer) return
   if (form.phone == "") {
     verify.value = "请输入手机号";
   } else if (form.phone.length != 11 || Number(form.phone) == NaN) {
     verify.value = "请输入11位手机号";
   } else {
-    $api
-      .sentCode({
-        phone: form.phone,
-        ctcode: Number(form.areaCode.slice(1)),
-      })
-      .then((res) => {
-        timer.value = setInterval(() => {
-          if (codeTimer.value == 0) {
-            clearInterval(timer.value);
-            timer.value = null;
-            codeBtn.value = "重新获取";
-            codeTimer.value = 60;
-            return;
-          }
-          codeTimer.value--;
-          codeBtn.value = `00:${codeTimer.value > 10 ? codeTimer.value : "0" + codeTimer.value
-            }`;
-        }, 1000);
-      });
+    if (isCode.value) {
+      $api
+        .sentCode({
+          phone: form.phone,
+          ctcode: Number(form.areaCode.slice(1)),
+        })
+        .then((res) => {
+          timer.value = setInterval(() => {
+            if (codeTimer.value == 0) {
+              clearInterval(timer.value);
+              timer.value = null;
+              codeBtn.value = "重新获取";
+              codeTimer.value = 60;
+              isCode.value = true
+              return;
+            }
+            isCode.value = false
+            codeTimer.value--;
+            codeBtn.value = `00:${codeTimer.value > 10 ? codeTimer.value : "0" + codeTimer.value
+              }`;
+          }, 1000);
+        });
+    }
   }
 };
 
@@ -232,8 +240,8 @@ const codeLogin = () => {
     margin-bottom: 60px;
 
     .logo {
-      width: 80px;
-      height: 80px;
+      width: 70px;
+      height: 70px;
       margin: 0 auto;
     }
   }
@@ -243,6 +251,14 @@ const codeLogin = () => {
     justify-content: center;
     flex-wrap: wrap;
 
+    :deep(.el-form-item) {
+      margin-bottom: 4px;
+    }
+
+    :deep(.el-input__inner) {
+      font-size: 13px;
+    }
+
     .flexs {
       display: flex;
       align-content: center;
@@ -251,38 +267,39 @@ const codeLogin = () => {
     .input-area {
       :deep(.el-input__inner) {
         cursor: pointer;
+        font-size: 12px;
       }
     }
 
     .w-50 {
-      width: 110px;
+      width: 100px;
       height: 40px;
       cursor: pointer;
 
       :deep(.el-input__wrapper) {
         border-radius: 6px 0 0 0;
-        border-left: 2px solid #dcdfe6;
-        border-top: 2px solid #dcdfe6;
-        border-right: 2px solid #dcdfe6;
-        border-bottom: 2px solid #dcdfe6;
+        border-left: 1px solid #dcdfe6;
+        border-top: 1px solid #dcdfe6;
+        border-right: 1px solid #dcdfe6;
+        border-bottom: 1px solid #dcdfe6;
         box-shadow: none;
       }
     }
 
     .el-icon-suf {
-      font-size: 18px;
+      font-size: 15px;
     }
 
     .phone-input {
-      width: 300px;
+      width: 200px;
       height: 40px;
 
       :deep(.el-input__wrapper) {
         border-radius: 0 6px 0 0;
         border-left: 0px solid;
-        border-top: 2px solid #dcdfe6;
-        border-right: 2px solid #dcdfe6;
-        border-bottom: 2px solid #dcdfe6;
+        border-top: 1px solid #dcdfe6;
+        border-right: 1px solid #dcdfe6;
+        border-bottom: 1px solid #dcdfe6;
         box-shadow: none;
       }
     }
@@ -290,46 +307,42 @@ const codeLogin = () => {
     .dis-flex {
       display: inline-block;
       margin-bottom: 0;
-
-      &:nth-child(1) {
-        width: 110px;
-      }
     }
 
     .password-input {
-      width: 410px !important;
+      width: 300px !important;
 
       :deep(.el-input__wrapper) {
-        border-right: 2px solid #dcdfe6 !important;
+        border-right: 1px solid #dcdfe6 !important;
         border-radius: 0 0 6px 6px !important;
       }
     }
 
     .password-input,
     .captcha-input {
-      width: 299px;
+      width: 200px;
       height: 40px;
 
       :deep(.el-input__wrapper) {
         border-radius: 0 0 0 6px;
-        border-left: 2px solid #dcdfe6;
+        border-left: 1px solid #dcdfe6;
         border-top: 0px solid #dcdfe6;
         border-right: 0px solid #dcdfe6;
-        border-bottom: 2px solid #dcdfe6;
+        border-bottom: 1px solid #dcdfe6;
         box-shadow: none;
       }
     }
 
     .code-box {
       cursor: pointer;
-      width: 109px;
-      height: 38px;
+      width: 100px;
+      height: 39px;
       border-radius: 0 0 6px 0;
-      border-right: 2px solid #dcdfe6;
-      border-bottom: 2px solid #dcdfe6;
+      border-right: 1px solid #dcdfe6;
+      border-bottom: 1px solid #dcdfe6;
       display: flex;
       align-items: center;
-      font-size: 14px;
+      font-size: 13px;
 
       span {
         &:nth-child(1) {
@@ -337,17 +350,16 @@ const codeLogin = () => {
           color: #adadad;
         }
 
-        &:nth-child(2) {}
       }
     }
 
     .sub-box {
       height: 50px;
       width: 410px;
-      font-size: 14px;
+      font-size: 12px;
 
       .verify {
-        padding: 0 10px;
+        padding: 0 4px;
         width: 410px;
         color: rgb(226, 42, 42);
       }
@@ -364,12 +376,12 @@ const codeLogin = () => {
     }
 
     .sign {
-      width: 410px;
+      width: 300px;
       height: 40px;
       background: #f03535;
       border-radius: 8px;
       color: #fff;
-      font-size: 17px;
+      font-size: 15px;
       text-align: center;
       line-height: 40px;
       letter-spacing: 8px;
@@ -380,8 +392,8 @@ const codeLogin = () => {
 
   .drop-down {
     position: absolute;
-    top: 42px;
-    width: 410px;
+    top: 40px;
+    width: 300px;
     height: 200px;
     background: #fff;
     border-radius: 0 0 8px 8px;

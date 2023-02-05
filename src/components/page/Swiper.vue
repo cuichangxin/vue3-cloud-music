@@ -6,9 +6,9 @@
       prevEl: '.swiper-button-prev',
     }"
     :pagination="{ clickable: true }"
-    :autoplay="{ disableOnInteraction: false, delay: 4000 }"
-    loop
-    :initialSlide="1"
+    :autoplay="{ disableOnInteraction: false, delay: 5000 }"
+    :loop="true"
+    :initialSlide="2"
     :watchSlidesProgress="true"
     :centeredSlides="true"
     @setTransition="setTransition"
@@ -16,8 +16,8 @@
     @paginationRender="paginationRender"
     @mouseenter="next_prev = true"
     @mouseleave="next_prev = false">
-    <SwiperSlide v-for="item in banners" @click="bannerJump(item)">
-      <div class="swiper-img">
+    <SwiperSlide v-for="item in banners">
+      <div class="swiper-img" @click.stop="bannerJump(item)">
         <img :src="item.pic">
         <span>{{ item.typeTitle }}</span>
       </div>
@@ -70,7 +70,7 @@ const progress = (progress) => {
     // console.log(slideProgress, modify);
     var translate = slideProgress * modify * 400 + "px";
     var scale = 1 - Math.abs(slideProgress) / 5;
-    var zIndex = 999 - Math.abs(Math.round(10 * slideProgress));
+    var zIndex = 999 - Math.abs(Math.round(99 * slideProgress));
     slide.transform("translateX(" + translate + ") scale(" + scale + ")");
     slide.css("zIndex", zIndex);
     slide.css("opacity", 1);
@@ -88,6 +88,7 @@ const paginationRender = (v) =>{
   }
 }
 
+// TODO 轮播图点击跳转
 const bannerJump = (v)=>{
   console.log(v);
   // 歌曲

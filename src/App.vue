@@ -1,10 +1,10 @@
 <template>
   <div class="main-box">
-    <Header></Header>
-    <div class="page_flex">
-      <Menu></Menu>
+    <Header />
+    <!-- <div class="page_flex"> -->
+      <Menu v-if="isRouteView" />
       <RouterView class="right-width" v-if="isRouteView" />
-    </div>
+    <!-- </div> -->
   </div>
 </template>
 
@@ -21,7 +21,6 @@ async function reload() {
   isRouteView.value = false
   await nextTick()
   isRouteView.value = true
-  console.log('替换了');
 }
 </script>
 
@@ -30,20 +29,20 @@ async function reload() {
   width: 1200px;
   height: 700px;
   border-radius: 20px;
-  background: #666;
+  background: #fff;
   margin: auto;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  overflow: hidden;
 
-  .page_flex {
-    display: flex;
-
+  // .page_flex {
+    // display: flex;
     .right-width {
-      width: calc(1200px - 260px);
+      width: calc(1200px - 250px);
     }
-  }
+  // }
 }
 </style>
