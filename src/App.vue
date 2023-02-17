@@ -1,10 +1,9 @@
 <template>
   <div class="main-box">
     <Header />
-    <!-- <div class="page_flex"> -->
-      <Menu v-if="isRouteView" />
-      <RouterView class="right-width" v-if="isRouteView" />
-    <!-- </div> -->
+    <Menu v-if="isRouteView" />
+    <RouterView class="right-width" v-if="isRouteView" />
+    <audioPlay class="audio"></audioPlay>
   </div>
 </template>
 
@@ -12,6 +11,7 @@
 import { nextTick, provide, ref } from 'vue'
 import Header from './components/common/Header.vue'
 import Menu from './components/common/Menu.vue'
+import audioPlay from './components/common/audioPlay.vue'
 
 provide('reload', {
   reload
@@ -39,10 +39,16 @@ async function reload() {
   overflow: hidden;
 
   // .page_flex {
-    // display: flex;
-    .right-width {
-      width: calc(1200px - 250px);
-    }
+  // display: flex;
+  .right-width {
+    width: calc(1200px - 250px);
+  }
+
   // }
+  .audio{
+    position: absolute;
+    bottom: 0;
+    z-index: 99;
+  }
 }
 </style>

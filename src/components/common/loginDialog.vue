@@ -5,10 +5,16 @@
         <el-icon :size="18" @click="close">
           <Close />
         </el-icon>
+        <div class="qrCode_box" v-if="!qr_code_show" @click="qrCodeLogin">
+          <div class="img-box">
+            <img src="../../assets/img/qrcode_click.jpg" alt="">
+          </div>
+          <div class="out"></div>
+        </div>
       </div>
     </template>
 
-    <div class="body">
+    <div class="body" v-if="!qr_code_show">
       <!-- logo -->
       <div class="logo-wrap">
         <img class="logo" src="../../assets/img/logo.png" alt="" />
@@ -84,16 +90,26 @@
         </div>
         <div class="sign" @click="sign">登录</div>
       </el-form>
+      <p class="suggest">建议使用二维码扫码登录</p>
+    </div>
+    <div class="qrCode_content" v-if="qr_code_show">
+      <h3>扫码登录</h3>
+      <el-image class="img" :src="qrCodeImg" loading="lazy" />
+      <p class="hint">请使用官方app扫码登录</p>
+      <div class="other" @click="otherLogin">
+        <p>选择其他登录模式</p>
+        <i class="iconfont">&#xe65f;</i>
+      </div>
     </div>
   </el-dialog>
 </template>
 <script setup>
-import { ref, reactive, inject } from "vue";
+import { ref, reactive, inject, onMounted, onBeforeUnmount } from "vue";
 import cookie from "js-cookie";
 import $api from "../../api/api";
 import md5 from 'js-md5'
 
-defineProps({
+let p = defineProps({
   visible: {
     type: Boolean
   }
@@ -108,6 +124,10 @@ const codeTimer = ref(60);
 const timer = ref(null);
 const loginModeText = ref('验证码登录')
 const isCode = ref(true)
+const qr_code_show = ref(true)
+const qrCodeImg = ref('')
+const unikey = ref('')
+const times = ref(null)
 /**
  * 0 密码登录
  * 1 验证码登录
@@ -122,16 +142,49 @@ const form = reactive({
 
 var countriesList = ref([]);
 
-$api.getCountries().then((res) => {
-  // console.log(res);
-  let countryList = [];
-  res.data.map((item) => {
-    item.countryList.map((vv) => {
-      countryList.push(vv);
-    });
-  });
-  countriesList.value = countryList;
-});
+// 二维码登录
+const qrCodeLogin = () => {
+  qr_code_show.value = true
+  $api.qrCodeKey().then((res) => {
+    unikey.value = res.data.unikey
+    $api.qrCodePic({
+      key: res.data.unikey,
+      qrimg: 'base64'
+    }).then((res) => {
+      // console.log(res);
+      qrCodeImg.value = res.data.qrimg
+      qrCode_login_status()
+    })
+  })
+}
+const otherLogin = () => {
+  qr_code_show.value = false
+}
+
+const qrCode_login_status = () => {
+  times.value = setInterval(() => {
+    $api.qrCodeDete({
+      key: unikey.value
+    }).then((res) => {
+      // console.log(res);
+      if (res.code == 800 || res.code == 803) {
+        clearInterval(times.value )
+        times.value = null
+      }
+      if (res.code == 803) {
+        cookie.set('ssoToken', res.cookie, { expires: 30 })
+        clearInterval(times.value )
+        times.value = null
+        $api.userData().then(res => {
+          // console.log(res,'resssssss');
+          cookie.set('userId', res.account.id, { expires: 30 })
+          reload.reload()
+          close()
+        })
+      }
+    })
+  }, 2000)
+}
 
 // 登录
 const sign = () => {
@@ -226,10 +279,60 @@ const codeLogin = () => {
   loginModeText.value = loginModeText.value == '验证码登录' ? '密码登录' : '验证码登录'
   loginMode.value = loginMode.value == 0 ? 1 : 0
 }
+onMounted(() => {
+  $api.getCountries().then((res) => {
+    // console.log(res);
+    let countryList = [];
+    res.data.map((item) => {
+      item.countryList.map((vv) => {
+        countryList.push(vv);
+      });
+    });
+    countriesList.value = countryList;
+  });
+  qrCodeLogin()
+})
+onBeforeUnmount(()=>{
+  clearInterval(times.value)
+})
 </script>
 <style lang="less" scoped>
 :deep(.el-icon) {
   cursor: pointer;
+}
+
+.my_header {
+  position: relative;
+
+  .qrCode_box {
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    cursor: pointer;
+
+    .img-box {
+      width: 46px;
+      height: 46px;
+      background: rgb(226, 224, 224);
+      border-radius: 0 10px 0 0;
+
+      img {
+        width: 40px;
+        height: 40px;
+        border-radius: 0 10px 0 0;
+        margin-top: 6px;
+      }
+    }
+
+    .out {
+      border-radius: 0 10px 0 0;
+      border: 23px solid;
+      border-color: transparent transparent #fff #fff;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+  }
 }
 
 .body {
@@ -411,6 +514,49 @@ const codeLogin = () => {
           background: #eee;
         }
       }
+    }
+  }
+
+  .suggest {
+    font-size: 13px;
+    margin: 50px 0 24px 0;
+    text-align: center;
+  }
+}
+
+.qrCode_content {
+  padding-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  h3 {
+    font-size: 27px;
+    color: #333;
+    font-weight: normal;
+  }
+
+  .img {
+    width: 180px;
+    height: 180px;
+    margin: 20px 0 14px 0;
+  }
+
+  .hint {
+    font-size: 14px;
+  }
+
+  .other {
+    display: flex;
+    margin-top: 60px;
+    cursor: pointer;
+
+    p {
+      font-size: 12px;
+    }
+
+    i {
+      font-size: 12px;
     }
   }
 }

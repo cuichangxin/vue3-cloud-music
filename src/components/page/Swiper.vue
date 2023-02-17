@@ -18,7 +18,7 @@
     @mouseleave="next_prev = false">
     <SwiperSlide v-for="item in banners">
       <div class="swiper-img" @click.stop="bannerJump(item)">
-        <img :src="item.pic">
+        <img :src="item.imageUrl">
         <span>{{ item.typeTitle }}</span>
       </div>
     </SwiperSlide>

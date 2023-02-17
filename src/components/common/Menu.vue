@@ -34,7 +34,7 @@
       <div class="bo"></div>
     </div>
   </div>
-  <LoginDialog v-model="visible"></LoginDialog>
+  <LoginDialog v-if="visible" v-model="visible"></LoginDialog>
 
   <AddPlayList v-model="addPM" @playlist="playlist" @close="close"></AddPlayList>
 
@@ -366,7 +366,7 @@ onMounted(() => {
     }
 
     .bo {
-      height: 50px;
+      height: 90px;
       width: 100%;
     }
   }

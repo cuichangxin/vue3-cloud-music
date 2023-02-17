@@ -9,7 +9,7 @@ import router from './router'
 import api from '../src/api/api'
 import './config/rem'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import cookie from './config/cookie'
+// import cookie from './config/cookie'
 import './assets/css/public.less'
 
 const app = createApp(App)

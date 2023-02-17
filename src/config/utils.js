@@ -16,3 +16,26 @@ export function requestUnit(num) {
     unit: unit
   };
 }
+
+export function formatTime(timer){
+  let second = parseInt(timer)
+  let minute = 0
+  // let hour = 0
+  if (second > 60) {
+    minute = parseInt(second / 60)
+    second = parseInt(second % 60)
+
+    // if (minute > 60) {
+    //   hour = parseInt(minute / 60)
+    //   minute = parseInt(minute % 60)
+    // }
+  }
+  let timeList = '' + (parseInt(second) < 10 ? '0' + parseInt(second) : parseInt(second))
+  if (minute > 0){
+    timeList = '' + (parseInt(minute) < 10 ? '0' + parseInt(minute) : parseInt(minute)) + ':' + timeList
+  }
+  // if (hour > 0) {
+  //   timeList = '' + parseInt(hour) + '时' + timeList
+  // }
+  return timeList
+}
