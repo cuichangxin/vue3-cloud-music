@@ -21,7 +21,9 @@
               }})</span>
             </div>
             <div class="song_wrap">
-              <span class="tone">{{ item.song.privilege.playMaxBrLevel == 'lossless' ? 'SQ' : 'Hi-Res' }}</span>
+              <span v-if="item.song.privilege.playMaxBrLevel != 'exhigh'" class="tone">{{
+                item.song.privilege.playMaxBrLevel
+                == 'lossless' ? 'SQ' : item.song.privilege.playMaxBrLevel == 'exhigh' ? '' : 'Hi-Res' }}</span>
               <div class="singer text-1" @click.stop="singer">
                 {{ item.song.alterName.join('/') }}
               </div>
@@ -165,9 +167,9 @@ ul {
             justify-content: center;
             align-items: center;
             line-height: 1;
-            border: 1px solid #ffb61e;
+            border: 1px solid #dd2822;
             border-radius: 3px;
-            color: #ffb61e;
+            color: #dd2822;
             transform: scale(0.9);
             margin-right: 2px;
           }

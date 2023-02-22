@@ -3,7 +3,8 @@ import { defineStore } from 'pinia'
 export const mainStore = defineStore('main',{
   state:()=>{
     return {
-      songData:''
+      songData:'',
+      atPlayShow:false,
     }
   },
   getters: {
